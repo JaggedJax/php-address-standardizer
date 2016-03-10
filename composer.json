@@ -1,7 +1,6 @@
 {
   "name": "inxilpro/address-standardizer",
   "description": "Formats a delivery address according to USPS addressing standards",
-  "version": "1.0.0",
   "type": "library",
   "license": "MIT",
   "authors": [
