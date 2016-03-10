@@ -1,15 +1,17 @@
-<?php /** @package AddressStandardizationSolution_Test */
+<?php /** @package AddressStandardizer_Test */
+
+use Galahad\AddressStandardizer\AddressStandardizer;
 
 /**
  * Tests the address line standardization method
  *
- * Usage:  phpunit AddressLineStandardization
+ * Usage:  phpunit AddressStandardizer
  *
- * @package AddressStandardizationSolution_Test
+ * @package AddressStandardizer_Test
  */
-class AddressLineStandardizationTest extends PHPUnit_Framework_TestCase {
+class AddressStandardizerTest extends PHPUnit_Framework_TestCase {
 	/**
-	 * @var AddressStandardizationSolution
+	 * @var AddressStandardizer
 	 */
 	protected $a;
 
@@ -18,18 +20,18 @@ class AddressLineStandardizationTest extends PHPUnit_Framework_TestCase {
 	 * PHPUnit's method for setting needed properties, etc
 	 */
 	protected function setUp() {
-		$this->a = new AddressStandardizationSolution;
+		$this->a = new AddressStandardizer;
 	}
 
 	/**
-	 * Runs the given address through the AddressLineStandardization method
+	 * Runs the given address through the AddressStandardizer method
 	 *
 	 * @param string $address  the address to standardize
 	 *
 	 * @return string  the standardized address
 	 */
 	protected function t($address) {
-		return $this->a->AddressLineStandardization($address);
+		return $this->a->standardize($address);
 	}
 
 

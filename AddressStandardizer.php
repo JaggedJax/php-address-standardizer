@@ -1,5 +1,7 @@
 <?php
 
+namespace Galahad\AddressStandardizer;
+
 /**
  * Address Standardization Solution, PHP Edition.
  *
@@ -28,7 +30,7 @@
  * @license http://www.analysisandsolutions.com/software/license.htm Simple Public License
  * @link http://www.analysisandsolutions.com/software/addr/addr.htm
  */
-class AddressStandardizationSolution {
+class AddressStandardizer {
 
 	/**
 	 * An array with compass directions as keys and abbreviations as values
@@ -1228,7 +1230,7 @@ class AddressStandardizationSolution {
 	 *
 	 * @link http://pe.usps.gov/cpim/ftp/pubs/Pub28/pub28.pdf
 	 */
-	public function AddressLineStandardization($address) {
+	public function standardize($address) {
 		if (empty($address)) {
 			return '';
 		}
@@ -1592,93 +1594,5 @@ class AddressStandardizationSolution {
 
 		ksort($out);
 		return implode(' ', $out);
-	}
-
-	/**
-	 * Generates a XHTML option list of states
-	 *
-	 * @param mixed $default  string or array of values to be selected
-	 * @param string $name  the name attribute for the form element
-	 * @param string $visible  what users see in the list:
-	 *                         <kbd>Word</kbd> (names)
-	 *                         or <kbd>Abbr</kbd> (initials)
-	 * @param string $value  values for the options:
-	 *                       <kbd>Word</kbd> (names)
-	 *                       or <kbd>Abbr</kbd> (initials)
-	 * @param string $class  class attribute for the <select> element
-	 * @param string $multiple  should multiple selections be permitted?
-	 *                          <kbd>Y</kbd> or <kbd>N</kbd>.
-	 * @param string $size  number of rows visible at one time.
-	 *                      <kbd>0</kbd> sets no size attribute.
-	 * @return void
-	 */
-	public function StateList($default = '', $name = 'StateID',
-			$visible = 'Word', $value = 'Abbr', $class = '', $multiple = 'N',
-			$size = '0')
-	{
-		// Validate input, just in case.
-		$legit = array('Abbr', 'Word');
-		if (!in_array($visible, $legit)) {
-			$visible = 'Word';
-		}
-		if (!in_array($value, $legit)) {
-			$value = 'Abbr';
-		}
-
-		if ($visible == 'Word') {
-			ksort($this->states);
-		} else {
-			asort($this->states);
-		}
-
-		echo "\n\n<select ";
-
-		if ($class) {
-			echo 'class="' . $class . '" ';
-		}
-
-		if ($size) {
-			echo 'size="' . $size . '" ';
-		}
-
-		if ($multiple == 'Y') {
-			echo 'multiple name="' . $name . '[]">' . "\n";
-			if (is_array($default)) {
-				$default_clean = array();
-				foreach ($default as $val) {
-					if (is_string($val)) {
-						$default_clean[] = strtoupper($val);
-					}
-				}
-			} else {
-				if (is_string($default)) {
-					$default_clean = array(strtoupper($default));
-				} else {
-					$default_clean = array();
-				}
-			}
-
-		} else {
-			echo 'name="' . $name . '">' . "\n";
-			if (is_array($default)) {
-				$default_clean = array(strtoupper(current($default)));
-			} else {
-				if (is_string($default)) {
-					$default_clean = array(strtoupper($default));
-				} else {
-					$default_clean = array();
-				}
-			}
-		}
-
-		foreach ($this->states as $Word => $Abbr) {
-			echo ' <option value="' . $$value . '"';
-			if (in_array($$value, $default_clean)) {
-				echo ' selected';
-			}
-			echo '>' . $$visible . "</option>\n";
-		}
-
-		echo "</select>\n\n";
 	}
 }
