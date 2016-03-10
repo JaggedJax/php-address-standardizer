@@ -9,6 +9,6 @@ addresses for caching (best when used with a 3rd-party solution).
 
 ```php
 $standardizer = new \Galahad\AddressStandardizer\AddressStandardizer();
-$address = $standardizer->standardize('1600 Pennsylvania Avenue NW Washington, D.C. 20500 U.S.');
-echo $address;
+$address = $standardizer->standardize('1600 Pennsylvania Avenue NW Washington, DC 20500 US');
+echo $address; // 1600 PENNSYLVANIA AVE NW WASHINGTON DC 20500 US
 ```
