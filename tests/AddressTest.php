@@ -1,6 +1,7 @@
 <?php /** @package AddressStandardizer_Test */
 
-use Galahad\AddressStandardizer\AddressStandardizer;
+use JaggedJax\AddressStandardizer\Address;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests the address line standardization method
@@ -9,9 +10,9 @@ use Galahad\AddressStandardizer\AddressStandardizer;
  *
  * @package AddressStandardizer_Test
  */
-class AddressStandardizerTest extends PHPUnit_Framework_TestCase {
+class AddressTest extends TestCase {
 	/**
-	 * @var AddressStandardizer
+	 * @var Address
 	 */
 	protected $a;
 
@@ -19,8 +20,8 @@ class AddressStandardizerTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * PHPUnit's method for setting needed properties, etc
 	 */
-	protected function setUp() {
-		$this->a = new AddressStandardizer;
+	protected function setUp(): void {
+		$this->a = new Address;
 	}
 
 	/**

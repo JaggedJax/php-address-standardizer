@@ -1,6 +1,6 @@
 <?php
 
-namespace Galahad\AddressStandardizer;
+namespace JaggedJax\AddressStandardizer;
 
 /**
  * Address Standardization Solution, PHP Edition.
@@ -30,16 +30,16 @@ namespace Galahad\AddressStandardizer;
  * @license http://www.analysisandsolutions.com/software/license.htm Simple Public License
  * @link http://www.analysisandsolutions.com/software/addr/addr.htm
  */
-class AddressStandardizer {
+class Address {
 
 	/**
 	 * An array with compass directions as keys and abbreviations as values
 	 *
 	 * Note: entries ending in "-R" are for reverse lookup.
 	 *
-	 * @var array
+	 * @var array<string,string>
 	 */
-	public $directionals = array(
+	public static array $directionals = array(
 		'E' => 'E',
 		'EAST' => 'E',
 		'E-R' => 'EAST',
@@ -73,9 +73,9 @@ class AddressStandardizer {
 	 *
 	 * Note: entries ending in "-R" are for reverse lookup.
 	 *
-	 * @var array
+	 * @var array<string, string>
 	 */
-	public $identifiers = array(
+	public static array $identifiers = array(
 		'APARTMENT' => 'APT',
 		'APT-R' => 'APARTMENT',
 		'APT' => 'APT',
@@ -149,9 +149,9 @@ class AddressStandardizer {
 
 	/**
 	 * An array with numeric words as keys and numbers as values
-	 * @var array
+	 * @var array<string, string>
 	 */
-	public $numbers = array(
+	public static array $numbers = array(
 		'FIRST' => '1',
 		'ONE' => '1',
 		'TEN' => '10',
@@ -196,9 +196,9 @@ class AddressStandardizer {
 
 	/**
 	 * An array with state names as keys and abbreviations as values
-	 * @var array
+	 * @var array<string, string>
 	 */
-	public $states = array(
+	public static array $states = array(
 		'ARMED FORCES AMERICA' => 'AA',
 		'ARMED FORCES EUROPE' => 'AE',
 		'ALASKA' => 'AK',
@@ -260,9 +260,9 @@ class AddressStandardizer {
 	 *
 	 * Note: entries ending in "-R" are for reverse lookup.
 	 *
-	 * @var array
+	 * @var array<string, string>
 	 */
-	public $suffixes = array(
+	public static array $suffixes = array(
 		'ALLEE' => 'ALY',
 		'ALLEY' => 'ALY',
 		'ALY-R' => 'ALLEY',
@@ -1200,9 +1200,9 @@ class AddressStandardizer {
 	/**
 	 * An array with things that look like street types but are actually names
 	 *
-	 * @var array
+	 * @var array<string, string>
 	 */
-	public $suffixSimiles = array(
+	public static array $suffixSimiles = array(
 		'LA' => 'LA',
 		'ST' => 'SAINT',
 		'VIA' => 'VIA',
@@ -1230,7 +1230,8 @@ class AddressStandardizer {
 	 *
 	 * @link http://pe.usps.gov/cpim/ftp/pubs/Pub28/pub28.pdf
 	 */
-	public function standardize($address) {
+	public static function standardize(string $address): string
+	{
 		if (empty($address)) {
 			return '';
 		}
@@ -1273,7 +1274,7 @@ class AddressStandardizer {
 
 		// Remove hash marks where possible.
 		if (preg_match('@(.+ )([A-Z]+)( #)( .+)@', $address, $atom)) {
-			if (isset($this->identifiers[$atom[2]])) {
+			if (isset(self::$identifiers[$atom[2]])) {
 				$address = "$atom[1]$atom[2]$atom[4]";
 			}
 		}
@@ -1287,8 +1288,8 @@ class AddressStandardizer {
 		// Convert numeric words to integers.
 		$parts = explode(' ', $address);
 		foreach ($parts as $key => $val) {
-			if (isset($this->numbers[$val])) {
-				$parts[$key] = $this->numbers[$val];
+			if (isset(self::$numbers[$val])) {
+				$parts[$key] = self::$numbers[$val];
 			}
 		}
 		$address = implode(' ', $parts);
@@ -1316,115 +1317,115 @@ class AddressStandardizer {
 
 		$highway_alternatives = 'HIGHWAY|HIGHWY|HIWAY|HIWY|HWAY|HWY|HYGHWAY|HYWAY|HYWY';
 		if (preg_match('@^([0-9A-Z.-]+ ?[0-9/]* ?)(.*)( CNTY| COUNTY) (' . $highway_alternatives . ')( NO | # | )?([0-9A-Z]+)(.*)$@', $address, $atom)) {
-			if (isset($this->states[$atom[2]])) {
-				$atom[2] = $this->states[$atom[2]];
+			if (isset(self::$states[$atom[2]])) {
+				$atom[2] = self::$states[$atom[2]];
 			}
-			if (isset($this->identifiers[$atom[6]])) {
-				$atom[6] = $this->identifiers[$atom[6]];
+			if (isset(self::$identifiers[$atom[6]])) {
+				$atom[6] = self::$identifiers[$atom[6]];
 				$atom[7] = str_replace(' #', '', $atom[7]);
 				return "$atom[1]$atom[2] COUNTY HWY $atom[6]$atom[7]";
 			}
-			return "$atom[1]$atom[2] COUNTY HIGHWAY $atom[6]" . $this->getEolAbbr($atom[7]);
+			return "$atom[1]$atom[2] COUNTY HIGHWAY $atom[6]" . self::getEolAbbr($atom[7]);
 		}
 
 		if (preg_match('@^([0-9A-Z.-]+ ?[0-9/]* ?)(.*)( CR |( CNTY| COUNTY) (ROAD|RD))( NO | # | )?([0-9A-Z]+)(.*)$@', $address, $atom)) {
-			if (isset($this->states[$atom[2]])) {
-				$atom[2] = $this->states[$atom[2]];
+			if (isset(self::$states[$atom[2]])) {
+				$atom[2] = self::$states[$atom[2]];
 			}
-			if (isset($this->identifiers[$atom[7]])) {
-				$atom[7] = $this->identifiers[$atom[7]];
+			if (isset(self::$identifiers[$atom[7]])) {
+				$atom[7] = self::$identifiers[$atom[7]];
 				$atom[8] = str_replace(' #', '', $atom[8]);
 				return "$atom[1]$atom[2] COUNTY RD $atom[7]$atom[8]";
 			}
-			return "$atom[1]$atom[2] COUNTY ROAD $atom[7]" . $this->getEolAbbr($atom[8]);
+			return "$atom[1]$atom[2] COUNTY ROAD $atom[7]" . self::getEolAbbr($atom[8]);
 		}
 
 		if (preg_match('@^([0-9A-Z.-]+ ?[0-9/]* ?)(.*)( SR|( STATE| ST) (ROAD|RD))( NO | # | )?([0-9A-Z]+)(.*)$@', $address, $atom)) {
-			if (isset($this->states[$atom[2]])) {
-				$atom[2] = $this->states[$atom[2]];
+			if (isset(self::$states[$atom[2]])) {
+				$atom[2] = self::$states[$atom[2]];
 			}
-			if (isset($this->identifiers[$atom[7]])) {
-				$atom[7] = $this->identifiers[$atom[7]];
+			if (isset(self::$identifiers[$atom[7]])) {
+				$atom[7] = self::$identifiers[$atom[7]];
 				$atom[8] = str_replace(' #', '', $atom[8]);
 				return "$atom[1]$atom[2] STATE RD $atom[7]$atom[8]";
 			}
-			return "$atom[1]$atom[2] STATE ROAD $atom[7]" . $this->getEolAbbr($atom[8]);
+			return "$atom[1]$atom[2] STATE ROAD $atom[7]" . self::getEolAbbr($atom[8]);
 		}
 
 		if (preg_match('@^([0-9A-Z.-]+ ?[0-9/]* ?)(.*)( STATE| ST) (ROUTE|RTE|RT)( NO | # | )?([0-9A-Z]+)(.*)$@', $address, $atom)) {
-			if (isset($this->states[$atom[2]])) {
-				$atom[2] = $this->states[$atom[2]];
+			if (isset(self::$states[$atom[2]])) {
+				$atom[2] = self::$states[$atom[2]];
 			}
-			if (isset($this->identifiers[$atom[6]])) {
-				$atom[6] = $this->identifiers[$atom[6]];
+			if (isset(self::$identifiers[$atom[6]])) {
+				$atom[6] = self::$identifiers[$atom[6]];
 				$atom[7] = str_replace(' #', '', $atom[7]);
 				return "$atom[1]$atom[2] STATE RTE $atom[6]$atom[7]";
 			}
-			return "$atom[1]$atom[2] STATE ROUTE $atom[6]" . $this->getEolAbbr($atom[7]);
+			return "$atom[1]$atom[2] STATE ROUTE $atom[6]" . self::getEolAbbr($atom[7]);
 		}
 
 		if (preg_match('@^([0-9A-Z.-]+ [0-9/]* ?)(INTERSTATE|INTRST|INT|I) ?(' . $highway_alternatives . '|H)? ?([0-9]+)(.*)$@', $address, $atom)) {
 			$atom[5] = str_replace(' BYP ', ' BYPASS ', $atom[5]);
-			return "$atom[1]INTERSTATE $atom[4]" . $this->getEolAbbr($atom[5]);
+			return "$atom[1]INTERSTATE $atom[4]" . self::getEolAbbr($atom[5]);
 		}
 
 		if (preg_match('@^([0-9A-Z.-]+ ?[0-9/]* ?)(.*)( STATE| ST) (' . $highway_alternatives . ')( NO | # | )?([0-9A-Z]+)(.*)$@', $address, $atom)) {
-			if (isset($this->states[$atom[2]])) {
-				$atom[2] = $this->states[$atom[2]];
+			if (isset(self::$states[$atom[2]])) {
+				$atom[2] = self::$states[$atom[2]];
 			}
-			if (isset($this->identifiers[$atom[6]])) {
-				$atom[6] = $this->identifiers[$atom[6]];
+			if (isset(self::$identifiers[$atom[6]])) {
+				$atom[6] = self::$identifiers[$atom[6]];
 				$atom[7] = str_replace(' #', '', $atom[7]);
 				return "$atom[1]$atom[2] STATE HWY $atom[6]$atom[7]";
 			}
-			return "$atom[1]$atom[2] STATE HIGHWAY $atom[6]" . $this->getEolAbbr($atom[7]);
+			return "$atom[1]$atom[2] STATE HIGHWAY $atom[6]" . self::getEolAbbr($atom[7]);
 		}
 
 		if (preg_match('@^([0-9A-Z.-]+ ?[0-9/]* ?)(.*)( US| U S|UNITED STATES) (' . $highway_alternatives . ')( NO | # | )?([0-9A-Z]+)(.*)$@', $address, $atom)) {
-			if (isset($this->states[$atom[2]])) {
-				$atom[2] = $this->states[$atom[2]];
+			if (isset(self::$states[$atom[2]])) {
+				$atom[2] = self::$states[$atom[2]];
 			}
-			if (isset($this->identifiers[$atom[6]])) {
-				$atom[6] = $this->identifiers[$atom[6]];
+			if (isset(self::$identifiers[$atom[6]])) {
+				$atom[6] = self::$identifiers[$atom[6]];
 				$atom[7] = str_replace(' #', '', $atom[7]);
 				return "$atom[1]$atom[2] US HWY $atom[6]$atom[7]";
 			}
-			return "$atom[1]$atom[2] US HIGHWAY $atom[6]" . $this->getEolAbbr($atom[7]);
+			return "$atom[1]$atom[2] US HIGHWAY $atom[6]" . self::getEolAbbr($atom[7]);
 		}
 
 		if (preg_match('@^((' . $highway_alternatives . '|H) ?(CONTRACT|C)|STAR) ?(ROUTE|RTE|RT|R)?( NO | # | )?([0-9]+) ?([A-Z]+)(.*)$@', $address, $atom)) {
-			return "HC $atom[6] BOX" . $this->getEolAbbr($atom[8]);
+			return "HC $atom[6] BOX" . self::getEolAbbr($atom[8]);
 		}
 
 		if (preg_match('@^([0-9A-Z.-]+ [0-9/]* ?)(RANCH )(ROAD|RD)( NO | # | )?([0-9A-Z]+)(.*)$@', $address, $atom)) {
-			if (isset($this->identifiers[$atom[5]])) {
-				$atom[5] = $this->identifiers[$atom[5]];
+			if (isset(self::$identifiers[$atom[5]])) {
+				$atom[5] = self::$identifiers[$atom[5]];
 				$atom[6] = str_replace(' #', '', $atom[6]);
 				return "$atom[1]RANCH RD $atom[5]$atom[6]";
 			}
-			return "$atom[1]RANCH ROAD $atom[5]" . $this->getEolAbbr($atom[6]);
+			return "$atom[1]RANCH ROAD $atom[5]" . self::getEolAbbr($atom[6]);
 		}
 
 		$address = preg_replace('@^([0-9A-Z.-]+) ([0-9][/][0-9])@', '\\1%\\2', $address);
 
 		if (preg_match('@^([0-9A-Z/%.-]+ )(ROAD|RD)([A-Z #]+)([0-9A-Z]+)(.*)$@', $address, $atom)) {
 			$atom[1] = str_replace('%', ' ', $atom[1]);
-			return "$atom[1]ROAD $atom[4]" . $this->getEolAbbr($atom[5]);
+			return "$atom[1]ROAD $atom[4]" . self::getEolAbbr($atom[5]);
 		}
 
 		if (preg_match('@^([0-9A-Z/%.-]+ )(ROUTE|RTE|RT)([A-Z #]+)([0-9A-Z]+)(.*)$@', $address, $atom)) {
 			$atom[1] = str_replace('%', ' ', $atom[1]);
-			return "$atom[1]ROUTE $atom[4]" . $this->getEolAbbr($atom[5]);
+			return "$atom[1]ROUTE $atom[4]" . self::getEolAbbr($atom[5]);
 		}
 
 		if (preg_match('@^([0-9A-Z/%.-]+ )(AVENUE|AVENU|AVNUE|AVEN|AVN|AVE|AV) ([A-Z]+)(.*)$@', $address, $atom)) {
 			$atom[1] = str_replace('%', ' ', $atom[1]);
-			return "$atom[1]AVENUE $atom[3]" . $this->getEolAbbr($atom[4]);
+			return "$atom[1]AVENUE $atom[3]" . self::getEolAbbr($atom[4]);
 		}
 
 		if (preg_match('@^([0-9A-Z/%.-]+ )(BOULEVARD|BOULV|BOUL|BLVD) ([A-Z]+)(.*)$@', $address, $atom)) {
 			$atom[1] = str_replace('%', ' ', $atom[1]);
-			return "$atom[1]BOULEVARD " . $this->getEolAbbr("$atom[3]$atom[4]");
+			return "$atom[1]BOULEVARD " . self::getEolAbbr("$atom[3]$atom[4]");
 		}
 
 
@@ -1440,7 +1441,7 @@ class AddressStandardizer {
 		for ($counter = $count; $counter > -1; $counter--) {
 			$out[$counter] = $parts[$counter];
 
-			if (isset($this->suffixes[$parts[$counter]])) {
+			if (isset(self::$suffixes[$parts[$counter]])) {
 				if (!$suff) {
 					// The first suffix (from the right).
 
@@ -1453,10 +1454,10 @@ class AddressStandardizer {
 								// Already set.
 								break;
 							default:
-								$out[$counter] = $this->suffixes[$parts[$counter]];
+								$out[$counter] = self::$suffixes[$parts[$counter]];
 						}
 					} else {
-						$out[$counter] = $this->suffixes[$parts[$counter]];
+						$out[$counter] = self::$suffixes[$parts[$counter]];
 					}
 					if ($counter == $count) {
 						$id++;
@@ -1466,49 +1467,49 @@ class AddressStandardizer {
 					// A subsequent suffix, display as full word,
 					// but could be a name (ie: LA, SAINT or VIA).
 
-					if (isset($this->suffixSimiles[$parts[$counter]])
-						&& !isset($this->suffixes[$out[$counter+1]]))
+					if (isset(self::$suffixSimiles[$parts[$counter]])
+						&& !isset(self::$suffixes[$out[$counter+1]]))
 					{
-						$out[$counter] = $this->suffixSimiles[$parts[$counter]];
+						$out[$counter] = self::$suffixSimiles[$parts[$counter]];
 					} else {
-						$out[$counter] = $this->suffixes[$parts[$counter]];
-						$out[$counter] = $this->suffixes["$out[$counter]-R"];
+						$out[$counter] = self::$suffixes[$parts[$counter]];
+						$out[$counter] = self::$suffixes["$out[$counter]-R"];
 					}
 				}
 
 				$suff++;
 
-			} elseif (isset($this->identifiers[$parts[$counter]])) {
-				$out[$counter] = $this->identifiers[$parts[$counter]];
+			} elseif (isset(self::$identifiers[$parts[$counter]])) {
+				$out[$counter] = self::$identifiers[$parts[$counter]];
 				if ($suff > 0) {
-					$out[$counter] = $this->identifiers["$out[$counter]-R"];
+					$out[$counter] = self::$identifiers["$out[$counter]-R"];
 				}
 				$id++;
 
-			} elseif (isset($this->directionals[$parts[$counter]])) {
+			} elseif (isset(self::$directionals[$parts[$counter]])) {
 				$prior = $counter - 1;
 				$next = $counter + 1;
 				if ($count >= $next
-					&& isset($this->suffixes[$parts[$next]]))
+					&& isset(self::$suffixes[$parts[$next]]))
 				{
-					$out[$counter] = $this->directionals[$parts[$counter]];
+					$out[$counter] = self::$directionals[$parts[$counter]];
 					if ($suff <= 1) {
-						$out[$counter] = $this->directionals["$out[$counter]-R"];
+						$out[$counter] = self::$directionals["$out[$counter]-R"];
 					}
 
 				} elseif ($counter > 2
 					&& !empty($parts[$next])
-					&& isset($this->directionals[$parts[$next]]))
+					&& isset(self::$directionals[$parts[$next]]))
 				{
 					// Already set.
 
 				} elseif ($counter == 2
-					&& isset($this->directionals[$parts[$prior]]))
+					&& isset(self::$directionals[$parts[$prior]]))
 				{
 					// Already set.
 
 				} else {
-					$out[$counter] = $this->directionals[$parts[$counter]];
+					$out[$counter] = self::$directionals[$parts[$counter]];
 				}
 
 				if ($counter == $count) {
@@ -1558,7 +1559,8 @@ class AddressStandardizer {
 	 *
 	 * @return string  the cleaned up string
 	 */
-	private function getEolAbbr($string) {
+	private static function getEolAbbr(string $string): string
+	{
 		$suff = 0;
 		$id = 0;
 
@@ -1566,9 +1568,9 @@ class AddressStandardizer {
 		$count = count($parts) - 1;
 
 		for ($counter = $count; $counter > -1; $counter--) {
-			if (isset($this->suffixes[$parts[$counter]])) {
+			if (isset(self::$suffixes[$parts[$counter]])) {
 				if (!$suff) {
-					$out[$counter] = $this->suffixes[$parts[$counter]];
+					$out[$counter] = self::$suffixes[$parts[$counter]];
 					$suff++;
 					if ($counter == $count) {
 						$id = 1;
@@ -1577,12 +1579,12 @@ class AddressStandardizer {
 					$out[$counter] = $parts[$counter];
 				}
 
-			} elseif (isset($this->identifiers[$parts[$counter]])) {
-				$out[$counter] = $this->identifiers[$parts[$counter]];
+			} elseif (isset(self::$identifiers[$parts[$counter]])) {
+				$out[$counter] = self::$identifiers[$parts[$counter]];
 				$id = 1;
 
-			} elseif (isset($this->directionals[$parts[$counter]])) {
-				$out[$counter] = $this->directionals[$parts[$counter]];
+			} elseif (isset(self::$directionals[$parts[$counter]])) {
+				$out[$counter] = self::$directionals[$parts[$counter]];
 				if ($counter == $count) {
 					$id = 1;
 				}
