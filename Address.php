@@ -203,6 +203,7 @@ class Address {
 		'ARMED FORCES EUROPE' => 'AE',
 		'ALASKA' => 'AK',
 		'ALABAMA' => 'AL',
+		'AMERICAN SAMOA' => 'AM',
 		'ARMED FORCES PACIFIC' => 'AP',
 		'ARKANSAS' => 'AR',
 		'ARIZONA' => 'AZ',
@@ -213,6 +214,7 @@ class Address {
 		'DELAWARE' => 'DE',
 		'FLORIDA' => 'FL',
 		'GEORGIA' => 'GA',
+		'GUAM' => 'GU',
 		'HAWAII' => 'HI',
 		'IOWA' => 'IA',
 		'IDAHO' => 'ID',
@@ -241,12 +243,16 @@ class Address {
 		'OKLAHOMA' => 'OK',
 		'OREGON' => 'OR',
 		'PENNSYLVANIA' => 'PA',
+		'PUERTO RICO' => 'PR',
 		'RHODE ISLAND' => 'RI',
 		'SOUTH CAROLINA' => 'SC',
 		'SOUTH DAKOTA' => 'SD',
 		'TENNESSEE' => 'TN',
 		'TEXAS' => 'TX',
 		'UTAH' => 'UT',
+		'U.S. VIRGIN ISLANDS' => 'VI',
+		'US VIRGIN ISLANDS' => 'VI',
+		'VIRGIN ISLANDS' => 'VI',
 		'VIRGINIA' => 'VA',
 		'VERMONT' => 'VT',
 		'WASHINGTON' => 'WA',
@@ -1241,7 +1247,8 @@ class Address {
 		 * General input sanitization.
 		 */
 
-		$address = strtoupper($address);
+		// Convert common european chars to US ascii and uppercase everything
+		$address = strtoupper(self::transliterateEuroCharacters($address));
 
 		// Replace bogus characters with spaces.
 		$address = preg_replace('@[^A-Z0-9 /#.-]@', ' ', $address);
@@ -1596,5 +1603,104 @@ class Address {
 
 		ksort($out);
 		return implode(' ', $out);
+	}
+	
+	/**
+	 * Swap European characters with their English ascii equivalent
+	 * @param string $input String to transliterate
+	 * @param bool $strip_non_ascii Should non-ascii characters be removed?
+	 * @return string
+	 */
+	public static function transliterateEuroCharacters(string $input, bool $strip_non_ascii = false): string
+	{
+		$translate = array(
+			'À' => 'A',
+			'Á' => 'A',
+			'Â' => 'A',
+			'Ã' => 'A',
+			'Ä' => 'A',
+			'Å' => 'A',
+			'Æ' => 'A',
+			'à' => 'a',
+			'á' => 'a',
+			'â' => 'a',
+			'ã' => 'a',
+			'ä' => 'a',
+			'å' => 'a',
+			'æ' => 'a',
+			'ß' => 'Ss',
+			'Þ' => 'B',
+			'þ' => 'b',
+			'Ç' => 'C',
+			'Č' => 'C',
+			'Ć' => 'C',
+			'č' => 'c',
+			'ć' => 'c',
+			'ç' => 'c',
+			'Đ' => 'Dj',
+			'Ð' => 'Dj',
+			'đ' => 'dj',
+			'È' => 'E',
+			'É' => 'E',
+			'Ê' => 'E',
+			'Ë' => 'E',
+			'è' => 'e',
+			'é' => 'e',
+			'ê' => 'e',
+			'ë' => 'e',
+			'ƒ' => 'f',
+			'Ì' => 'I',
+			'Í' => 'I',
+			'Î' => 'I',
+			'Ï' => 'I',
+			'ì' => 'i',
+			'í' => 'i',
+			'î' => 'i',
+			'ï' => 'i',
+			'ı' => 'i',
+			'Ñ' => 'N',
+			'ñ' => 'n',
+			'Ò' => 'O',
+			'Ó' => 'O',
+			'Ô' => 'O',
+			'Õ' => 'O',
+			'Ö' => 'O',
+			'Ø' => 'O',
+			'Œ' => 'OE',
+			'ð' => 'o',
+			'ò' => 'o',
+			'ó' => 'o',
+			'ô' => 'o',
+			'õ' => 'o',
+			'ö' => 'o',
+			'ø' => 'o',
+			'œ' => 'oe',
+			'Ŕ' => 'R',
+			'ŕ' => 'r',
+			'Š' => 'S',
+			'š' => 's',
+			'Ù' => 'U',
+			'Ú' => 'U',
+			'Û' => 'U',
+			'Ü' => 'U',
+			'ù' => 'u',
+			'ú' => 'u',
+			'û' => 'u',
+			'ü' => 'u',
+			'Ý' => 'Y',
+			'Ÿ' => 'Y',
+			'ý' => 'y',
+			'ÿ' => 'y',
+			'Ž' => 'Z',
+			'ž' => 'z',
+		);
+		
+		$new_str = strtr($input, $translate);
+		
+		if ($strip_non_ascii) {
+			$new_str = @preg_replace("/[^[:ascii:]]+/", '', $new_str);
+		}
+		
+		return $new_str;
 	}
 }

@@ -991,4 +991,12 @@ class AddressTest extends TestCase {
 	public function test31200000() {
 		$this->assertEquals('200 PATEWOOD DR SA120', $this->t('200 Patewood Drive,SA120'));
 	}
+	
+	/**
+	 * Tests transliteration works
+	 * @return void
+	 */
+	public function test40000000() {
+		$this->assertEquals('2634 ELIXIR MULLER CT', $this->t('2634 Elixir Müller Ct'));
+	}
 }
