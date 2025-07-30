@@ -11,17 +11,12 @@ use PHPUnit\Framework\TestCase;
  * @package AddressStandardizer_Test
  */
 class AddressTest extends TestCase {
-	/**
-	 * @var Address
-	 */
-	protected $a;
 
 
 	/**
 	 * PHPUnit's method for setting needed properties, etc
 	 */
 	protected function setUp(): void {
-		$this->a = new Address;
 	}
 
 	/**
@@ -32,7 +27,7 @@ class AddressTest extends TestCase {
 	 * @return string  the standardized address
 	 */
 	protected function t($address) {
-		return $this->a->standardize($address);
+		return Address::standardize($address);
 	}
 
 
